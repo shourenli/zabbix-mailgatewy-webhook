@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# 凭据与密钥（严禁提交）
+*.token
+.gateway_token
+admin_api_token.txt
+env.conf
+*.env
+.env.*
+*.pem
+*.key
+*.crt
+*.p12
+
+# 部署产物 / 本地环境
+deploy/env.conf

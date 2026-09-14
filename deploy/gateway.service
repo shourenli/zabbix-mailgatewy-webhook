@@ -1,0 +1,27 @@
+[Unit]
+Description=Zabbix AI Alert SMTP Gateway
+After=network.target
+
+[Service]
+Type=simple
+# 网关程序实际位置（由 install.sh 拷贝）
+ExecStart=/usr/bin/python3 /opt/zabbix-ai-email/gateway.py
+Restart=always
+RestartSec=3
+# 仅监听本机，禁止对外
+# systemd 的 EnvironmentFile 用于注入 Token 和 SMTP 凭据（推荐）
+EnvironmentFile=-/etc/zabbix-ai-email/env.conf
+
+# 安全：降权为低权限用户
+User=zabbix-ai-email
+Group=zabbix-ai-email
+
+# 加固
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+RestrictSUIDSGID=true
+RestrictRealtime=true
+
+[Install]
+WantedBy=multi-user.target
