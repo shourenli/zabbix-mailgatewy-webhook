@@ -54,7 +54,8 @@ zabbix_export:
         // --- 1. 全局配置 ---
         var GLM_MODEL = 'glm-4-flash';
         var GLM_URL = 'https://open.bigmodel.cn/api/paas/v4/chat/completions';
-        var GW_URL = 'http://10.0.0.1:8025/send';
+        // 生产环境请替换为实际网关地址（内网 IP 已脱敏）
+        var GW_URL = 'http://CHANGE_ME_GATEWAY_HOST:8025/send';
         
         try {
             // --- 工具函数 ---
