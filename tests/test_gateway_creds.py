@@ -59,7 +59,7 @@ def test_placeholder_does_not_leak_real_credentials():
     cfg = gw._load_smtp_defaults()
     for key in ("user", "pass", "from"):
         value = cfg[key]
-        # 占位符不应包含真实邮箱的 @ 域（如 username-sh.com.cn / orgb 等）
+        # 占位符不应包含真实邮箱的 @ 域（如 example.com 等）
         assert "@" not in value, f"{key} 泄露了邮箱格式: {value!r}"
         assert "username" not in value.lower(), f"{key} 疑似泄露实名账号: {value!r}"
 
