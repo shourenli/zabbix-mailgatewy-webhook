@@ -1,0 +1,317 @@
+zabbix_export:
+  version: '7.0'
+  media_types:
+    - name: 'AI 邮件解读 (GLM)'
+      type: WEBHOOK
+      parameters:
+        - name: active
+          value: 'true'
+        - name: alert_message
+          value: '{ALERT.MESSAGE}'
+        - name: alert_sendto
+          value: '{ALERT.SENDTO}'
+        - name: alert_subject
+          value: '{ALERT.SUBJECT}'
+        - name: event_date
+          value: '{EVENT.DATE}'
+        - name: event_duration
+          value: '{EVENT.DURATION}'
+        - name: event_name
+          value: '{EVENT.NAME}'
+        - name: event_recovery_date
+          value: '{EVENT.RECOVERY.DATE}'
+        - name: event_recovery_time
+          value: '{EVENT.RECOVERY.TIME}'
+        - name: event_severity
+          value: '{EVENT.SEVERITY}'
+        - name: event_status
+          value: '{EVENT.STATUS}'
+        - name: event_time
+          value: '{EVENT.TIME}'
+        - name: event_value
+          value: '{EVENT.VALUE}'
+        - name: gateway_token
+          value: CHANGE_ME_GATEWAY_TOKEN
+        - name: glm_api_key
+          value: CHANGE_ME_GLM_API_KEY
+        - name: host_conn
+          value: '{HOST.CONN}'
+        - name: host_description
+          value: '{HOST.DESCRIPTION}'
+        - name: host_name
+          value: '{HOST.NAME}'
+        - name: inventory_tag
+          value: '{INVENTORY.TAG}'
+        - name: trigger_desc
+          value: '{TRIGGER.DESCRIPTION}'
+      script: |
+        /**
+         * Zabbix Webhook 媒介脚本 - 最终修复版
+         * 核心修复：将 escapeHtml 移至 try 内部，修复作用域问题
+         */
+        
+        // --- 1. 全局配置 ---
+        var GLM_MODEL = 'glm-4-flash';
+        var GLM_URL = 'https://open.bigmodel.cn/api/paas/v4/chat/completions';
+        var GW_URL = 'http://127.0.0.1:8025/send';
+        
+        try {
+            // --- 工具函数 (必须放在 try 内部) ---
+            function escapeHtml(str) {
+                if (!str) return '';
+                return String(str)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;');
+            }
+        
+            // --- 2. 参数解析 ---
+            var params = JSON.parse(value);
+            
+            // 基础认证与配置
+            var apiKey = params.glm_api_key;
+            var gwToken = params.gateway_token;
+            var gwProfile = params.gw_profile || 'local';
+            var sendto = params.alert_sendto || params.to || '';
+            var subject = params.alert_subject || '';
+        
+            // 业务字段宏
+            var site = params.inventory_tag || '';          
+            var hostName = params.host_name || '';          
+            var eventTime = params.event_time || '';        
+            var eventDate = params.event_date || '';        
+            var eventName = params.event_name || '';        
+            var hostConn = params.host_conn || '';          
+            var severity = params.event_severity || '';     
+            var desc = params.host_description || '';       
+            var triggerDesc = params.trigger_desc || '';    
+            
+            // 恢复相关宏
+            var recoveryStatus = params.event_status || '';
+            var recoveryTime = params.event_recovery_time || '';
+            var recoveryDate = params.event_recovery_date || '';
+            var duration = params.event_duration || '';
+            
+            // 备用信息
+            var message = params.alert_message || '';
+        
+            // --- 3. 核心逻辑判定 ---
+            var eventValue = params.event_value || '';
+            var isRecovery = false;
+        
+            if (eventValue === '0') {
+                isRecovery = true;
+            } else if (eventValue === '1') {
+                isRecovery = false;
+            } else {
+                isRecovery = (recoveryStatus === 'RECOVERED');
+            }
+        
+            // --- 4. 构建邮件正文内容 ---
+            function buildFields() {
+                var lines = [];
+                if (isRecovery) {
+                    lines.push('【恢复设备】: ' + hostName);
+                    lines.push('');
+                    lines.push('【故障时间】: ' + (eventTime || '') + (eventDate ? ' on ' + eventDate : ''));
+                    lines.push('【恢复时间】: ' + (recoveryTime || '') + (recoveryDate ? ' on ' + recoveryDate : ''));
+                    lines.push('【中断时长】: ' + (duration || ''));
+                    lines.push('');
+                    lines.push('【恢复对象】: ' + (eventName || ' ') + recoveryStatus );
+                    lines.push('【恢复IP】: ' + hostConn);
+                    lines.push('【故障等级】: ' + severity);
+                } else {
+                    lines.push('【告警设备】: ' + hostName);
+                    lines.push('【故障时间】:' + (eventTime && eventDate ? eventTime + ' on ' + eventDate : (eventTime || eventDate || '')));
+                    lines.push('');
+                    lines.push('【告警对象】: ' + (eventName || ' ') + recoveryStatus );
+                    lines.push('【故障IP】: ' + hostConn);
+                    lines.push('【故障等级】: ' + severity);
+                    lines.push('');
+                    lines.push('【详细信息】:');
+                    var detail = (desc && desc.trim()) || (triggerDesc && triggerDesc.trim()) || eventName;
+                    lines.push(detail || '—');
+                }
+                lines.push('*************************************');
+                lines.push('阿里云zabbix监控平台');
+                lines.push('自动告警邮件，勿回复');
+                lines.push('@CHANGE_ME_ORG');
+                return lines.join('\n');
+            }
+        
+            // --- 5. 调用 GLM 生成 AI 解读 ---
+            function callGLM(text) {
+                try {
+                    var sysPrompt = "你是一名专业的IT运维告警解读助手。请用【简明】的语气输出两三句话的白话解读，严格分三段：「发生了什么」「影响」「建议」。要求：用通俗中文，避免技术黑话，明确影响范围并给出可执行建议，开头不要寒暄。";
+                    
+                    var req = new HttpRequest();
+                    req.addHeader('Content-Type: application/json');
+                    req.addHeader('Authorization: Bearer ' + apiKey);
+                    
+                    var payload = {
+                        model: GLM_MODEL,
+                        messages: [
+                            { role: 'system', content: sysPrompt },
+                            { role: 'user', content: '告警内容：\n' + text }
+                        ],
+                        temperature: 0.7,
+                        max_tokens: 300,
+                        stream: false
+                    };
+                    
+                    var resp = req.post(GLM_URL, JSON.stringify(payload));
+                    if (req.getStatus() !== 200) {
+                        Zabbix.log(4, 'GLM API 返回异常 status=' + req.getStatus());
+                        return null;
+                    }
+                    var data = JSON.parse(resp);
+                    if (data.choices && data.choices.length > 0) {
+                        return data.choices[0].message.content;
+                    }
+                    return null;
+                } catch (e) {
+                    return null;
+                }
+            }
+        
+            // --- 6. 发送邮件 ---
+            function sendMail(to, subject, body) {
+                try {
+                    var req = new HttpRequest();
+                    req.addHeader('Content-Type: application/json');
+                    req.addHeader('Authorization: Bearer ' + gwToken);
+                    
+                    var payload = {
+                        to: to,
+                        subject: subject,
+                        body: body,
+                        profile: gwProfile
+                    };
+                    
+                    var resp = req.post(GW_URL, JSON.stringify(payload));
+                    if (req.getStatus() !== 200) {
+                        Zabbix.log(4, '网关发送失败 status=' + req.getStatus());
+                        return false;
+                    }
+                    var data = JSON.parse(resp);
+                    return data.ok === true;
+                } catch (e) {
+                    Zabbix.log(4, '调用本机网关异常: ' + e);
+                    return false;
+                }
+            }
+        
+            // --- 7. 主流程执行 ---
+            if (sendto === '') {
+                throw '未配置收件人(ALERT.SENDTO 为空)';
+            }
+        
+            // 7.1 生成内容
+            var fieldsText = buildFields();
+            var digestText = ''; // 可以按需填充
+            var aiText = callGLM(digestText || message);
+        
+            // 7.2 组装 HTML 邮件 (这里调用了内部的 escapeHtml，现在完全正常了)
+            var htmlBody = '<div style="font-family:微软雅黑,Arial,sans-serif;font-size:14px;line-height:1.7;color:#333;">\n';
+            
+            htmlBody += ' <div style="background:#fafafa;border:1px solid #e0e0e0;padding:12px 16px;border-radius:4px;word-wrap:break-word;line-height:1.6;">\n';
+            fieldsText.split('\n').forEach(function (line) {
+                if (line.trim() !== '') {
+                    htmlBody += ' <div>' + escapeHtml(line) + '</div>\n';
+                } else {
+                    htmlBody += ' <br>\n';
+                }
+            });
+            htmlBody += ' </div>\n';
+        
+            htmlBody += ' <div style="margin-top:14px;padding:10px 14px;border-top:1px dashed #d0d0d0;color:#666;font-size:13px;">\n';
+            htmlBody += ' <div style="font-weight:bold;color:#888;margin-bottom:4px;font-size:12px;">💡 AI 白话解读（辅助说明）</div>\n';
+            if (aiText) {
+                aiText.split('\n').forEach(function (line) {
+                    if (line.trim() !== '') {
+                        htmlBody += ' <div style="color:#555;">' + escapeHtml(line) + '</div>\n';
+                    }
+                });
+            } else {
+                htmlBody += ' <div style="color:#999;">（AI 解读生成失败，请以上方告警字段为准）</div>\n';
+            }
+            htmlBody += ' </div>\n';
+            htmlBody += '</div>\n';
+        
+            // 7.3 确定邮件主题
+            var outSubject = subject;
+            if (!outSubject) {
+                if (isRecovery) {
+                    outSubject = '【恢复通知】【据点名称】: ' + site;
+                } else {
+                    outSubject = '【故障据点】: ' + site;
+                }
+                if (!site) {
+                    outSubject = '【Zabbix 告警】';
+                }
+            }
+        
+            // 7.4 发送并返回结果
+            var sendOk = sendMail(sendto, outSubject, htmlBody);
+            var result = {
+                ok: sendOk,
+                to: sendto,
+                has_ai: (aiText !== null && aiText !== ''),
+                is_recovery: isRecovery
+            };
+            
+            // 正常返回结果
+            return JSON.stringify(result);
+        
+        } catch (error) {
+            Zabbix.log(3, '[Webhook Script] 执行失败: ' + error);
+            // 抛出异常，Zabbix 界面会显示 Failed
+            throw 'Webhook 执行异常: ' + error;
+        }
+      timeout: 10s
+      description: '告警邮件 AI 白话解读（对齐 CHANGE_ME_EMAIL_CHN 字段格式）+ 经本机 SMTP 网关发送'
+      message_templates:
+        - event_source: TRIGGERS
+          operation_mode: PROBLEM
+          subject: '【故障据点】: {INVENTORY.TAG}'
+          message: |
+            【告警设备】: {HOST.NAME}
+            【故障时间】:{EVENT.TIME} on {EVENT.DATE}
+            
+            【告警对象】: {EVENT.NAME}
+            【故障IP】: {HOST.CONN}
+            【故障等级】: {EVENT.SEVERITY}
+            【故障编号】: {EVENT.ID}
+            【故障状态值】: {EVENT.VALUE}
+            【故障状态】: {EVENT.STATUS}
+            
+            【详细信息】:
+               {HOST.DESCRIPTION}
+            
+            
+            *************************************
+            阿里云zabbix监控平台
+            自动告警邮件，勿回复
+            @CHANGE_ME_ORG
+        - event_source: TRIGGERS
+          operation_mode: RECOVERY
+          subject: '【恢复通知】【据点名称】: {INVENTORY.TAG}'
+          message: |
+            【恢复设备】: {HOST.NAME}
+            【故障时间】: {EVENT.TIME} on {EVENT.DATE}
+            【恢复时间】: {EVENT.RECOVERY.TIME} on {EVENT.RECOVERY.DATE}
+            【中断时长】: {EVENT.DURATION}
+            
+            【恢复对象】: {EVENT.NAME}
+            【恢复IP】: {HOST.CONN}
+            【故障等级】: {EVENT.SEVERITY}
+            【故障编号】: {EVENT.ID}
+            【故障状态值】: {EVENT.VALUE}
+            【故障状态】: {EVENT.STATUS}
+            
+            
+            *************************************
+            阿里云zabbix监控平台
+            自动告警邮件，勿回复
+            @CHANGE_ME_ORG

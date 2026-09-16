@@ -23,3 +23,6 @@ env.conf
 
 # 部署产物 / 本地环境
 deploy/env.conf
+
+# yaml media 导出的明文备份（含真凭据，严禁提交）
+yaml/*.yaml.orig
