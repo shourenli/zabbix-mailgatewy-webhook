@@ -1,10 +1,11 @@
-# mailgatewy v1.0.0 — Zabbix 告警邮件 HTTP→SMTP 网关
+# mailgatewy v1.0.1 — Zabbix 告警邮件 HTTP→SMTP 网关
 
-> **首次正式发布（stable）**
+> **最新发布（latest）**：`v1.0.1`
 >
 > 仓库：`git@github.com:shourenli/zabbix-mailgatewy-webhook.git`（私有）
-> 标签：`v1.0.0` → `5b0f3a9`（含 11 个文件）
-> 主分支：`main`（在 `v1.0.0` 基础上继续前进，含文档与换行符规范化改进）
+> 标签：`v1.0.1` → 指向 `main`（**14 个文件**，含本 release note）
+> 上一版：`v1.0.0` → `5b0f3a9`（11 个文件）
+> 发布线：`main`
 
 ---
 
@@ -50,6 +51,34 @@
 
 ---
 
+## 版本历史
+
+### v1.0.1（本版）
+
+**仅文档与工程规范化，程序逻辑与 `v1.0.0` 完全一致（`src/` 与 `tests/` 逐字节相同）。**
+
+| 变更 | 说明 |
+|---|---|
+| 新增 `.gitattributes` | `* text=auto eol=lf`（脚本/配置显式 `eol=lf`，二进制显式 `binary`）。根治 Windows 下 `core.autocrlf=true` 把归档包转成 CRLF、导致 `deploy/install.sh` 在 Linux 上报 `bad interpreter` 的问题 |
+| README 补充兼容性 | 明确本方案构建并验证于 **Zabbix 6.0 LTS 与 7.0 LTS**；新增「接入 Zabbix」步骤（含用户媒介必须 Enabled 的提醒） |
+| README 修正 | 修正环境变量名（`GATEWAY_SMTP_MAX_CONCURRENCY` / `_MAX_RETRIES` / `_RETRY_BACKOFF`）、补全目录树、修正标题拼写 |
+| 补回 `LICENSE` | GPL-3.0（建库时选定，曾因历史覆盖而丢失） |
+| release note 随版发布 | `v1.0.0` 的 tag 中不含 `docs/`，本版起 release note 随 tag 一并分发 |
+
+> **本版将 tag 内容与 `main` 对齐**：`v1.0.0` 的 tag 停在 11 个文件，`main` 已前进到 14 个文件；`v1.0.1` 起两者一致。
+
+### v1.0.0
+
+首次正式发布（stable）。
+
+- 通用 HTTP→SMTP 网关核心实现（鉴权 / 多 Profile / 限流 / 重试 / 防伪成功 / 多收件人归一化）；
+- 一键部署脚本与 systemd 单元；
+- Zabbix **6.0 LTS 与 7.0 LTS** 两类 Media（Webhook）参考配置，含标题/正文模板对齐；
+- 凭据安全测试套件（`pytest` 全绿）；
+- 完成脱敏的干净 git 基线（仓库重建后全新历史，无残留旧对象）。
+
+---
+
 ## 目录结构
 
 ```
@@ -77,8 +106,8 @@ mailgatewy/
 ## 快速开始
 
 ```bash
-# 1) 克隆
-git clone git@github.com:shourenli/zabbix-mailgatewy-webhook.git mailgatewy
+# 1) 克隆（要最新文档请用 main 或 v1.0.1）
+git clone --branch v1.0.1 git@github.com:shourenli/zabbix-mailgatewy-webhook.git mailgatewy
 cd mailgatewy
 
 # 2) 一键安装（创建用户 zabbix-ai-email、目录 /opt/zabbix-ai-email、/etc/zabbix-ai-email）
@@ -151,25 +180,20 @@ pytest -v
 
 ---
 
+## 已知事项
+
+- **换行符**：仓库已通过 `.gitattributes` 统一为 LF。若你的工作副本是早期版本（`v1.0.0` 及以前），Windows 下 checkout 可能带 CRLF，此时自行打归档包需加 `-c core.autocrlf=false -c core.eol=lf`，否则 `install.sh` 在 Linux 上会报 `bad interpreter`。
+- **用户媒介状态**：Zabbix 中「媒介类型」或「用户 → 媒介」被禁用（`active=0`）时不会有任何邮件外发，且 Zabbix 侧不一定报错。排障时优先检查该项。
+- **凭据轮换**：若曾在生产环境与历史版本同源使用过 SMTP 密码 / 网关 Token / 大模型 API Key，建议轮换。
+
+---
+
 ## 安全与脱敏说明
 
 - 全仓库凭据一律**占位符化**（`CHANGE_ME_*` / `UNSET_PLS_SET_ME`）；源码、配置示例、参考 YAML 均无任何真实 SMTP 密码、Token、内网 IP 或公司实名。
 - 发布前已对 **git 完整历史**做三层脱敏改写（文件内容 / commit message / 作者身份），使可达历史中不再残留真实内网 IP 或公司实名。
 - 对于强推后 GitHub 服务端仍可凭旧 SHA 取回的**不可达旧对象**，已通过**删除原仓库并同名重建**彻底切断 —— 重建后按旧 SHA 取回返回 `not our ref`，旧内容不可再获取。
-- 若曾在生产使用过与历史版本同源的凭据，建议轮换高价值凭证（SMTP 密码、网关 Token、大模型 API Key）。
 
 ---
 
-## 变更范围（v1.0.0 发布快照）
-
-- 通用 HTTP→SMTP 网关核心实现（鉴权 / 多 Profile / 限流 / 重试 / 防伪成功 / 多收件人归一化）；
-- 一键部署脚本与 systemd 单元；
-- Zabbix **6.0 LTS 与 7.0 LTS** 两类 Media（Webhook）参考配置，含标题/正文模板对齐；
-- 凭据安全测试套件（`pytest` 全绿）；
-- 完成脱敏的干净 git 基线（仓库重建后全新历史，无残留旧对象）。
-
-> `main` 分支在 `v1.0.0` 标签之后另有文档改进（README 补充 Zabbix 兼容性说明、新增 `.gitattributes`、补回 `LICENSE`），代码逻辑与 `v1.0.0` 一致。
-
----
-
-*mailgatewy v1.0.0 — 2026-09-17*
+*mailgatewy v1.0.1 — 2026-09-17*
