@@ -15,7 +15,7 @@ Zabbix Webhook 无法原生做 SMTP 认证发信，因此本服务在本机监�
   3. 失败给出 JSON 错误与 HTTP 状态码，便于 Webhook 脚本判断是否降级。
 
 Profile 说明 (env.conf 中的 GATEWAY_<PROFILE>_SMTP_* 系列变量)：
-  内置两个 profile：local(本地 CHANGE_ME_HOST) 与 remote(远端 Zabbix)。
+  内置两个 profile：local(本机 Zabbix) 与 remote(远端 Zabbix)。
   每个 profile 由 5 个变量定义，缺省回落到顶层默认(local)值：
     GATEWAY_<PROFILE>_SMTP_HOST / _PORT / _USER / _PASS / _FROM / _HELO
 
