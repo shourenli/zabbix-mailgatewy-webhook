@@ -65,7 +65,7 @@ mailgatewy/
 #### 1. Clone and install
 
 ```bash
-git clone --branch v1.0.2 git@github.com:shourenli/zabbix-mailgatewy-webhook.git mailgatewy
+git clone --branch v1.0.3 git@github.com:shourenli/zabbix-mailgatewy-webhook.git mailgatewy
 cd mailgatewy/deploy
 sudo bash install.sh
 ```
@@ -252,7 +252,7 @@ mailgatewy/
 #### 1. 克隆并安装
 
 ```bash
-git clone --branch v1.0.2 git@github.com:shourenli/zabbix-mailgatewy-webhook.git mailgatewy
+git clone --branch v1.0.3 git@github.com:shourenli/zabbix-mailgatewy-webhook.git mailgatewy
 cd mailgatewy/deploy
 sudo bash install.sh
 ```

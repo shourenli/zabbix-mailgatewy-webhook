@@ -1,4 +1,4 @@
-# mailgatewy v1.0.2 — Zabbix Alert Email HTTP→SMTP Gateway
+# mailgatewy v1.0.3 — Zabbix Alert Email HTTP→SMTP Gateway
 
 [English](#english) | [简体中文](#简体中文)
 
@@ -8,11 +8,11 @@
 
 [English](#english) | [简体中文](#简体中文)
 
-> **Latest release**: `v1.0.2`
+> **Latest release**: `v1.0.3`
 >
 > Repository: `git@github.com:shourenli/zabbix-mailgatewy-webhook.git` (private)
-> Tag: `v1.0.2` → points to `main` (the same 14-file set as `v1.0.1`, documentation update only)
-> Previous: `v1.0.1` → `22ede87`; `v1.0.0` → `5b0f3a9` (11 files)
+> Tag: `v1.0.3` → points to `main` (the same 14-file set as `v1.0.2`, documentation update only)
+> Previous: `v1.0.2` → `f09f595`; `v1.0.1` → `22ede87`; `v1.0.0` → `5b0f3a9` (11 files)
 > Release line: `main`
 
 ### Overview
@@ -55,11 +55,26 @@ Both reference configs are Zabbix **Media (`type: WEBHOOK`) export files** that 
 
 | Version | Summary |
 |---|---|
-| **v1.0.2** (this release) | Documentation internationalization only — bilingual English/Chinese README and release notes. **`src/` and `tests/` are byte-for-byte identical to v1.0.0/v1.0.1 (zero code change).** |
+| **v1.0.3** (this release) | **License declaration only** — added `### License` / `### 许可证` sections to the README and the release notes (GPL-3.0, obligations, warranty disclaimer). **`src/` and `tests/` are byte-for-byte identical to v1.0.0/v1.0.1/v1.0.2 (zero code change).** |
+| v1.0.2 | Documentation internationalization only — bilingual English/Chinese README and release notes. |
 | v1.0.1 | Documentation and engineering standardization only; program logic identical to v1.0.0 (`src/` and `tests/` byte-for-byte identical). |
 | v1.0.0 | First stable release. |
 
-#### v1.0.2 (this release)
+#### v1.0.3 (this release)
+
+**Documentation only; program logic is identical to `v1.0.2` (`src/` and `tests/` are byte-for-byte identical to `v1.0.0`/`v1.0.1`/`v1.0.2`).**
+
+The `LICENSE` file (GPL-3.0) had been in the repository since `v1.0.1`, but neither the README nor the release notes ever **stated** it — the only occurrence of "GPL-3.0" was a comment inside the directory tree (`├── LICENSE  # GPL-3.0`), so a reader could not tell what license the project uses.
+
+| Change | Description |
+|---|---|
+| Added `### License` | At the end of the English region (after "Deploying to systemd"): GPL-3.0, the three obligations (derivative works under the same license / complete corresponding source available / modifications clearly marked), a no-warranty disclaimer, and links to the local `LICENSE` file and the official GNU page. |
+| Added `### 许可证` | The Chinese counterpart, structurally symmetrical to the English section. |
+| Release notes kept in sync | `docs/RELEASE_NOTES.md` gained the same license sections in both language regions, so the two documents agree. |
+| Zero code change | `src/gateway.py` and everything under `tests/` are byte-for-byte identical to `v1.0.0`/`v1.0.1`/`v1.0.2`. |
+| LF and anchors unchanged | The CR byte count is 0 in both files; language-switch links and their anchor targets are untouched. |
+
+#### v1.0.2
 
 **Documentation internationalization only; program logic is identical to `v1.0.1` (`src/` and `tests/` are byte-for-byte identical to `v1.0.0`/`v1.0.1`).**
 
@@ -118,8 +133,8 @@ mailgatewy/
 ### Quick Start
 
 ```bash
-# 1) Clone (use main or v1.0.2 for the latest documentation)
-git clone --branch v1.0.2 git@github.com:shourenli/zabbix-mailgatewy-webhook.git mailgatewy
+# 1) Clone (use main or v1.0.3 for the latest documentation)
+git clone --branch v1.0.3 git@github.com:shourenli/zabbix-mailgatewy-webhook.git mailgatewy
 cd mailgatewy
 
 # 2) One-shot install (creates user zabbix-ai-email, dirs /opt/zabbix-ai-email, /etc/zabbix-ai-email)
@@ -215,11 +230,11 @@ See the [official GNU GPL v3.0 page](https://www.gnu.org/licenses/gpl-3.0.html) 
 
 [English](#english) | [简体中文](#简体中文)
 
-> **最新发布（latest）**：`v1.0.2`
+> **最新发布（latest）**：`v1.0.3`
 >
 > 仓库：`git@github.com:shourenli/zabbix-mailgatewy-webhook.git`（私有）
-> 标签：`v1.0.2` → 指向 `main`（与 `v1.0.1` 相同的 14 个文件，仅文档更新）
-> 上一版：`v1.0.1` → `22ede87`；`v1.0.0` → `5b0f3a9`（11 个文件）
+> 标签：`v1.0.3` → 指向 `main`（与 `v1.0.2` 相同的 14 个文件，仅文档更新）
+> 上一版：`v1.0.2` → `f09f595`；`v1.0.1` → `22ede87`；`v1.0.0` → `5b0f3a9`（11 个文件）
 > 发布线：`main`
 
 ### 简介
@@ -262,11 +277,26 @@ See the [official GNU GPL v3.0 page](https://www.gnu.org/licenses/gpl-3.0.html) 
 
 | 版本 | 摘要 |
 |---|---|
-| **v1.0.2**（本版） | 仅文档国际化 —— README 与 release note 中英双语。**`src/` 与 `tests/` 与 v1.0.0/v1.0.1 逐字节相同（代码零改动）。** |
+| **v1.0.3**（本版） | **仅补许可证声明** —— README 与 release note 新增 `### License` / `### 许可证` 章节（GPL-3.0、义务条款、免责声明）。**`src/` 与 `tests/` 与 v1.0.0/v1.0.1/v1.0.2 逐字节相同（代码零改动）。** |
+| v1.0.2 | 仅文档国际化 —— README 与 release note 中英双语。 |
 | v1.0.1 | 仅文档与工程规范化；程序逻辑与 v1.0.0 完全一致（`src/` 与 `tests/` 逐字节相同）。 |
 | v1.0.0 | 首次正式发布（stable）。 |
 
-#### v1.0.2（本版）
+#### v1.0.3（本版）
+
+**仅文档变更，程序逻辑与 `v1.0.2` 完全一致（`src/` 与 `tests/` 与 `v1.0.0`/`v1.0.1`/`v1.0.2` 逐字节相同）。**
+
+`LICENSE`（GPL-3.0）自 `v1.0.1` 起就已在仓库中，但 README 与 release note **从未真正声明**过 —— "GPL-3.0" 唯一出现的地方是目录树里的注释 `├── LICENSE  # GPL-3.0`，读者无法从文档看出本项目采用何种许可证。
+
+| 变更 | 说明 |
+|---|---|
+| 新增 `### License` 章节 | 英文区末尾（systemd 部署段之后）新增：GPL-3.0、三条义务（衍生作品同许可 / 提供完整对应源码 / 标注修改）、免责声明，并链接本地 `LICENSE` 文件与 GNU 官方页面 |
+| 新增 `### 许可证` 章节 | 中文区对应章节，与英文区结构对称 |
+| release note 同步 | 中英两区同样补许可证章节，与 README 口径一致 |
+| 代码零改动 | `src/gateway.py` 与 `tests/` 下全部文件与 `v1.0.0`/`v1.0.1`/`v1.0.2` 逐字节相同 |
+| 换行与锚点不变 | 两文件 CR 字节数均为 0；语言切换链接与锚点目标未改动 |
+
+#### v1.0.2
 
 **仅文档国际化，程序逻辑与 `v1.0.1` 完全一致（`src/` 与 `tests/` 与 `v1.0.0`/`v1.0.1` 逐字节相同）。**
 
@@ -325,8 +355,8 @@ mailgatewy/
 ### 快速开始
 
 ```bash
-# 1) 克隆（要最新文档请用 main 或 v1.0.2）
-git clone --branch v1.0.2 git@github.com:shourenli/zabbix-mailgatewy-webhook.git mailgatewy
+# 1) 克隆（要最新文档请用 main 或 v1.0.3）
+git clone --branch v1.0.3 git@github.com:shourenli/zabbix-mailgatewy-webhook.git mailgatewy
 cd mailgatewy
 
 # 2) 一键安装（创建用户 zabbix-ai-email、目录 /opt/zabbix-ai-email、/etc/zabbix-ai-email）
@@ -418,4 +448,4 @@ pytest -v
 
 ---
 
-*mailgatewy v1.0.2 — 2026-09-17*
+*mailgatewy v1.0.3 — 2026-09-17*
