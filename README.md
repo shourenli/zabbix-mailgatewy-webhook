@@ -175,6 +175,18 @@ sudo cp deploy/gateway.service /etc/systemd/system/
 sudo systemctl daemon-reload && sudo systemctl enable --now gateway.service
 ```
 
+### License
+
+This project is licensed under the **GNU General Public License v3.0 (GPL-3.0)**. The full license text is in the [`LICENSE`](LICENSE) file.
+
+You are free to use, modify and redistribute this software, including for commercial purposes, provided that:
+
+- derivative works are distributed under the same GPL-3.0 license;
+- the complete corresponding source code is made available;
+- any changes to the original source are clearly marked.
+
+The software is provided **without any warranty**, to the extent permitted by law. See the [official GNU GPL v3.0 page](https://www.gnu.org/licenses/gpl-3.0.html) for the authoritative terms.
+
 [English](#english) | [简体中文](#简体中文)
 
 ---
@@ -349,5 +361,17 @@ sudo chmod 600 /etc/zabbix-ai-email/env.conf
 sudo cp deploy/gateway.service /etc/systemd/system/
 sudo systemctl daemon-reload && sudo systemctl enable --now gateway.service
 ```
+
+### 许可证
+
+本项目基于 **GNU 通用公共许可证第 3 版（GPL-3.0）** 发布，完整条款见 [`LICENSE`](LICENSE) 文件。
+
+你可以自由使用、修改、再分发本软件（含商业用途），但需满足以下条件：
+
+- 衍生作品须以相同的 GPL-3.0 许可证发布；
+- 须提供完整的对应源代码；
+- 对原始源代码的修改须明确标注。
+
+在法律允许的最大范围内，本软件**不提供任何担保**。权威条款以 [GNU GPL v3.0 官方页面](https://www.gnu.org/licenses/gpl-3.0.html) 为准。
 
 [English](#english) | [简体中文](#简体中文)

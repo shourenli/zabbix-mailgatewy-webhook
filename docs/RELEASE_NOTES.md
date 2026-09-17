@@ -197,6 +197,16 @@ Test coverage: placeholder fallback when no environment variables are set, `GATE
 - Before release, the **entire git history** was rewritten in three layers (file content / commit message / author identity) so that no real internal IP or company name remains in the reachable history.
 - For **unreachable old objects** that GitHub's servers could still fetch by old SHA after a force-push, the link was fully severed by **deleting the original repository and recreating it under the same name** — after the rebuild, fetching by the old SHA returns `not our ref`, and the old content is no longer retrievable.
 
+### License
+
+This project is released under the **GNU General Public License v3.0 (GPL-3.0)**. The full text is in the [`LICENSE`](LICENSE) file.
+
+- Derivative works must be distributed under the same GPL-3.0 license.
+- The complete corresponding source code must be made available.
+- The software is provided **without any warranty**, to the extent permitted by law.
+
+See the [official GNU GPL v3.0 page](https://www.gnu.org/licenses/gpl-3.0.html) for the authoritative terms.
+
 [English](#english) | [简体中文](#简体中文)
 
 ---
@@ -393,6 +403,16 @@ pytest -v
 - 全仓库凭据一律**占位符化**（`CHANGE_ME_*` / `UNSET_PLS_SET_ME`）；源码、配置示例、参考 YAML 均无任何真实 SMTP 密码、Token、内网 IP 或公司实名。
 - 发布前已对 **git 完整历史**做三层脱敏改写（文件内容 / commit message / 作者身份），使可达历史中不再残留真实内网 IP 或公司实名。
 - 对于强推后 GitHub 服务端仍可凭旧 SHA 取回的**不可达旧对象**，已通过**删除原仓库并同名重建**彻底切断 —— 重建后按旧 SHA 取回返回 `not our ref`，旧内容不可再获取。
+
+### 许可证
+
+本项目基于 **GNU 通用公共许可证第 3 版（GPL-3.0）** 发布，完整条款见 [`LICENSE`](LICENSE) 文件。
+
+- 衍生作品须以相同的 GPL-3.0 许可证发布。
+- 须提供完整的对应源代码。
+- 在法律允许的最大范围内，本软件**不提供任何担保**。
+
+权威条款以 [GNU GPL v3.0 官方页面](https://www.gnu.org/licenses/gpl-3.0.html) 为准。
 
 [English](#english) | [简体中文](#简体中文)
 
