@@ -1,0 +1,30 @@
+# ---------------------------------------------------------------------------
+# 换行符统一为 LF
+#
+# 背景：本仓库在 Windows（core.autocrlf=true）上开发。若不固定换行符，
+# `git archive` / GitHub source zip 会把文本文件转成 CRLF，导致
+# deploy/install.sh 在 Linux 上报 "bad interpreter: /bin/bash^M"。
+# ---------------------------------------------------------------------------
+* text=auto eol=lf
+
+# 文本类文件（显式声明，避免受客户端 core.autocrlf 影响）
+*.py           text eol=lf
+*.sh           text eol=lf
+*.yaml         text eol=lf
+*.yml          text eol=lf
+*.md           text eol=lf
+*.service      text eol=lf
+*.conf         text eol=lf
+*.example      text eol=lf
+.gitignore     text eol=lf
+.gitattributes text eol=lf
+
+# 二进制文件不参与换行转换
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.zip   binary
+*.gz    binary
+*.tar   binary
